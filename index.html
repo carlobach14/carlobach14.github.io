@@ -23,49 +23,62 @@
 
   /* SIDEBAR */
   #sidebar {
-    width: 250px;
-    background: rgba(0, 0, 0, 0.8);
+    width: 240px;
+    background: rgba(0,0,0,0.85);
     height: 100vh;
     position: fixed;
     left: 0;
     top: 0;
-    border-right: 2px solid #0f0;
-    padding: 20px;
+    border-right: 2px solid #0ff;
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   #sidebar h2 {
-    color: #0f0;
+    color: #0ff;
     text-align: center;
     margin-bottom: 20px;
-    text-shadow: 0 0 10px #0f0;
+    text-shadow: 0 0 12px #0ff;
+    font-size: 1.5em;
   }
 
   .menu-btn {
     display: block;
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
+    width: 90%;
+    padding: 12px;
+    margin: 6px 0;
     background: #111;
-    color: #0f0;
-    border: 1px solid #0f0;
+    color: #0ff;
+    border: 1px solid #0ff;
     cursor: pointer;
     text-align: left;
+    border-radius: 6px;
+    transition: 0.2s;
   }
 
   .menu-btn:hover {
-    background: #0f0;
+    background: #0ff;
     color: black;
     font-weight: bold;
+    box-shadow: 0 0 8px #0ff;
   }
 
   /* MAIN CONTENT */
   #main {
-    margin-left: 270px;
+    margin-left: 260px;
     padding: 20px;
   }
 
   .tool {
     display: none;
+    background: rgba(0,0,0,0.7);
+    border: 2px solid #0ff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px #0ff;
   }
 
   .active {
@@ -74,21 +87,46 @@
 
   input, button, textarea {
     background: #000;
-    color: #0f0;
-    border: 1px solid #0f0;
+    color: #0ff;
+    border: 1px solid #0ff;
     padding: 10px;
-    margin: 6px;
-    width: 80%;
+    margin: 6px 0;
+    width: 95%;
+    border-radius: 6px;
+    font-family: monospace;
   }
 
   button:hover {
-    background: #0f0;
+    background: #0ff;
     color: black;
     font-weight: bold;
   }
 
   #colorPicker {
     width: 150px;
+  }
+
+  /* Responsive */
+  @media screen and (max-width: 768px) {
+    #sidebar {
+      width: 100%;
+      height: auto;
+      position: relative;
+      border-right: none;
+      border-bottom: 2px solid #0ff;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    #main {
+      margin-left: 0;
+    }
+
+    .menu-btn {
+      width: 45%;
+      margin: 6px;
+    }
   }
 </style>
 </head>
@@ -99,11 +137,11 @@
 <div id="sidebar">
   <h2>Carlo Tools</h2>
   <button class="menu-btn" onclick="openTool('ip')">🔍 IP Lookup</button>
-  <button class="menu-btn" onclick="openTool('breach')">🛡️ Breach Check</button>
+  <button class="menu-btn" onclick="openTool('discord')">💠 Discord ID</button>
+  <button class="menu-btn" onclick="openTool('tiktok')">🎵 TikTok Lookup</button>
   <button class="menu-btn" onclick="openTool('randomip')">🎲 Random IP</button>
   <button class="menu-btn" onclick="openTool('hash')">🔐 Hash Generator</button>
   <button class="menu-btn" onclick="openTool('base64')">🗂️ Base64 Encode/Decode</button>
-  <button class="menu-btn" onclick="openTool('ping')">📡 Ping Test</button>
   <button class="menu-btn" onclick="openTool('device')">📱 Device Info</button>
   <button class="menu-btn" onclick="openTool('color')">🎨 Custom Colour</button>
 </div>
@@ -118,12 +156,20 @@
     <div id="ipResult"></div>
   </div>
 
-  <!-- Breach Check -->
-  <div id="breach" class="tool">
-    <h1>Breach Checker</h1>
-    <input id="breachIn" placeholder="Email or Username">
-    <button onclick="breachCheck()">Check</button>
-    <div id="breachOut"></div>
+  <!-- Discord ID Lookup -->
+  <div id="discord" class="tool">
+    <h1>Discord ID Lookup</h1>
+    <input id="discordInput" placeholder="Enter Discord ID">
+    <button onclick="lookupDiscord()">Lookup</button>
+    <div id="discordResult"></div>
+  </div>
+
+  <!-- TikTok Lookup -->
+  <div id="tiktok" class="tool">
+    <h1>TikTok User Lookup</h1>
+    <input id="tiktokInput" placeholder="Enter TikTok Username">
+    <button onclick="lookupTikTok()">Lookup</button>
+    <div id="tiktokResult"></div>
   </div>
 
   <!-- Random IP -->
@@ -150,14 +196,6 @@
     <button onclick="b64Encode()">Encode</button>
     <button onclick="b64Decode()">Decode</button>
     <div id="b64Out"></div>
-  </div>
-
-  <!-- Ping -->
-  <div id="ping" class="tool">
-    <h1>Ping Test</h1>
-    <input id="pingIn" placeholder="Host (example.com)">
-    <button onclick="fakePing()">Ping</button>
-    <div id="pingOut"></div>
   </div>
 
   <!-- Device Info -->
@@ -204,20 +242,53 @@ async function lookupIP() {
   }
 }
 
-/* Breach Checker (simulated because API needs key) */
-function breachCheck() {
-  let q = document.getElementById("breachIn").value;
-  let o = document.getElementById("breachOut");
+/* Discord ID Lookup */
+function lookupDiscord() {
+  const id = document.getElementById("discordInput").value;
+  const out = document.getElementById("discordResult");
+  out.innerHTML = "Fetching...";
 
-  o.innerHTML = "Checking...";
-  setTimeout(() => {
-    o.innerHTML = `<p>⚠️ WARNING: Possible breaches found for <b>${q}</b></p>`;
-  }, 1500);
+  try {
+    const timestamp = ((BigInt(id) >> 22n) + 1420070400000n);
+    const date = new Date(Number(timestamp));
+    out.innerHTML = `
+      <p>ID: ${id}</p>
+      <p>Created At: ${date.toUTCString()}</p>
+      <p>Epoch Timestamp: ${timestamp}</p>
+    `;
+  } catch {
+    out.innerHTML = "Invalid ID.";
+  }
+}
+
+/* TikTok Lookup (public API) */
+async function lookupTikTok() {
+  const username = document.getElementById("tiktokInput").value;
+  const out = document.getElementById("tiktokResult");
+  out.innerHTML = "Fetching...";
+
+  try {
+    const res = await fetch(`https://www.tiktok.com/@${username}`);
+    if (!res.ok) throw new Error("User not found");
+    const text = await res.text();
+    const match = text.match(/"user":{"id":"(\d+)","uniqueId":"([^"]+)","nickname":"([^"]+)"/);
+    if (match) {
+      out.innerHTML = `
+        <p>Username: ${match[2]}</p>
+        <p>Display Name: ${match[3]}</p>
+        <p>User ID: ${match[1]}</p>
+      `;
+    } else {
+      out.innerHTML = "User not found or private.";
+    }
+  } catch {
+    out.innerHTML = "Error fetching TikTok data.";
+  }
 }
 
 /* Random IP */
 function genIP() {
-  let ip = `${rand()}${rand()}${rand()}${rand()}`;
+  const ip = `${rand()}${rand()}${rand()}${rand()}`.replace(/\.$/, "");
   document.getElementById("rip").innerText = ip;
 }
 function rand() {
@@ -231,27 +302,17 @@ async function doHash(type) {
   const data = encoder.encode(text);
   const hash = await crypto.subtle.digest(type.replace("-", ""), data);
   const hex = Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("");
-
   document.getElementById("hashOut").innerText = `${type}: ${hex}`;
 }
 
 /* Base64 */
 function b64Encode() {
-  let txt = document.getElementById("b64In").value;
+  const txt = document.getElementById("b64In").value;
   document.getElementById("b64Out").innerText = btoa(txt);
 }
 function b64Decode() {
-  let txt = document.getElementById("b64In").value;
+  const txt = document.getElementById("b64In").value;
   document.getElementById("b64Out").innerText = atob(txt);
-}
-
-/* Fake ping */
-function fakePing() {
-  let o = document.getElementById("pingOut");
-  o.innerHTML = "Pinging...";
-  setTimeout(()=> {
-    o.innerHTML = "Ping: " + (Math.random()*100).toFixed(1) + " ms";
-  }, 1000);
 }
 
 /* Device info */
@@ -263,7 +324,7 @@ document.getElementById("dev").innerText = JSON.stringify({
 
 /* Colour customizer */
 function setColor() {
-  let c = document.getElementById("colorPicker").value;
+  const c = document.getElementById("colorPicker").value;
   document.body.style.color = c;
   document.querySelectorAll("*").forEach(el => {
     if (el.style.border) el.style.borderColor = c;
@@ -291,6 +352,13 @@ setInterval(() => {
     drops[i]++;
   });
 }, 50);
+
+window.addEventListener('resize', () => {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+  cols = Math.floor(w / 20);
+  drops = Array(cols).fill(1);
+});
 </script>
 
 </body>
