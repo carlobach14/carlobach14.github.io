@@ -19,7 +19,7 @@ canvas#matrix {
 }  
 /* SIDEBAR */  
 #sidebar {  
-  width: 260px;  
+  width: 240px;  
   background: rgba(0,0,0,0.85);  
   height: 100vh;  
   position: fixed;  
@@ -81,7 +81,7 @@ canvas#matrix {
 }  
 /* MAIN CONTAINER */  
 #main {  
-  margin-left: 280px;  
+  margin-left: 260px;  
   padding: 20px;  
 }  
 .tool {  
@@ -128,8 +128,9 @@ ul li { margin: 8px 0; font-size: 18px; }
 }  
 </style>  
 </head>  
-<body>  
-<canvas id="matrix"></canvas>  <button id="settingsBtn">⚙️ Settings</button>
+<body>  <canvas id="matrix"></canvas>
+
+<button id="settingsBtn">⚙️ Settings</button>
 
 <div id="settingsPanel">  
   <h3>Settings</h3>  
@@ -148,8 +149,6 @@ ul li { margin: 8px 0; font-size: 18px; }
   <button class="menu-btn" onclick="openTool('weather')">🌦️ Weather</button>  
   <button class="menu-btn" onclick="openTool('roast')">🔥 Roast Gen</button>  
   <button class="menu-btn" onclick="openTool('morse')">• — Morse</button>  
-  <button class="menu-btn" onclick="openTool('username')">👤 Username Lookup</button>  
-  <button class="menu-btn" onclick="openTool('whois')">🌐 Website Info</button>  
 </div>  <div id="main">  
   <!-- HOME -->  
   <div id="home" class="tool active">  
@@ -164,8 +163,6 @@ ul li { margin: 8px 0; font-size: 18px; }
       <li>🌦️ Weather Checker</li>  
       <li>🔥 Roast Generator / Rizz</li>  
       <li>• — Morse Encoder/Decoder</li>  
-      <li>👤 Username Lookup</li>  
-      <li>🌐 Website / WHOIS Info</li>  
     </ul>  
   </div>    <!-- IP Lookup -->    <div id="ip" class="tool">  
     <h1>IP Lookup</h1>  
@@ -218,39 +215,8 @@ ul li { margin: 8px 0; font-size: 18px; }
     <button onclick="encodeMorse()">Encode</button>  
     <button onclick="decodeMorse()">Decode</button>  
     <div id="morseOut"></div>  
-  </div>    <!-- Username Lookup -->    <div id="username" class="tool">  
-    <h1>Username Lookup</h1>  
-    <input id="usernameInput" placeholder="Enter Username">  
-    <button onclick="lookupUsername()">Check</button>  
-    <div id="usernameResult"></div>  
-  </div>    <!-- Website / WHOIS -->    <div id="whois" class="tool">  
-    <h1>Website Info / WHOIS</h1>  
-    <input id="domainInput" placeholder="Enter Domain (example.com)">  
-    <button onclick="lookupDomain()">Check</button>  
-    <div id="domainResult"></div>  
   </div>  
 </div>  <script>  
-/* Matrix Background */  
-const canvas = document.getElementById('matrix');  
-const ctx = canvas.getContext('2d');  
-canvas.width = window.innerWidth;  
-canvas.height = window.innerHeight;  
-const cols = Math.floor(canvas.width / 20);  
-const ypos = Array(cols).fill(0);  
-  
-function matrix() {  
-  ctx.fillStyle = 'rgba(0,0,0,0.1)';  
-  ctx.fillRect(0, 0, canvas.width, canvas.height);  
-  ctx.fillStyle = '#0f0';  
-  ctx.font = '16px monospace';  
-  ypos.forEach((y, ind) => {  
-    const text = String.fromCharCode(Math.random() * 128);  
-    ctx.fillText(text, ind * 20, y);  
-    ypos[ind] = y > canvas.height + Math.random() * 10000 ? 0 : y + 20;  
-  });  
-}  
-setInterval(matrix, 50);  
-  
 /* Tool navigation */  
 function openTool(id){  
   document.querySelectorAll(".tool").forEach(a=>a.classList.remove("active"));  
@@ -265,10 +231,10 @@ document.getElementById("settingsBtn").onclick = ()=>{
 document.getElementById("colorPicker").onchange = e=>{  
   let col = e.target.value;  
   document.body.style.color = col;  
-  document.querySelectorAll("*").forEach(el=>{if(el.style.borderColor) el.style.borderColor=col;});  
+  document.querySelectorAll("*").forEach(el=>{if(el.style.borderColor)el.style.borderColor=col;});  
 };  
   
-/* IP Lookup with more details */  
+/* IP Lookup */  
 async function lookupIP(){  
   let ip=document.getElementById("ipInput").value;  
   let out=document.getElementById("ipResult");  
@@ -276,20 +242,12 @@ async function lookupIP(){
   try{  
     let r=await fetch(`https://ipapi.co/${ip}/json`);  
     let j=await r.json();  
-    out.innerHTML=`  
-      <p><strong>IP:</strong> ${j.ip}</p>  
-      <p><strong>City:</strong> ${j.city}</p>  
-      <p><strong>Region:</strong> ${j.region}</p>  
-      <p><strong>Country:</strong> ${j.country_name}</p>  
-      <p><strong>Org:</strong> ${j.org}</p>  
-      <p><strong>Latitude:</strong> ${j.latitude}</p>  
-      <p><strong>Longitude:</strong> ${j.longitude}</p>  
-      <p><strong>Timezone:</strong> ${j.timezone}</p>  
-      <p><strong>ASN:</strong> ${j.asn}</p>  
-    `;  
-  }catch{  
-    out.innerHTML="Error fetching IP.";  
-  }  
+    out.innerHTML=`<p>IP: ${j.ip}</p>  
+                   <p>City: ${j.city}</p>  
+                   <p>Region: ${j.region}</p>  
+                   <p>Country: ${j.country_name}</p>  
+                   <p>Org: ${j.org}</p>`;  
+  }catch{ out.innerHTML="Error fetching IP."; }  
 }  
   
 /* Discord ID Lookup */  
@@ -301,9 +259,7 @@ function lookupDiscord(){
     const ts=((BigInt(id)>>22n)+1420070400000n);  
     const d=new Date(Number(ts));  
     out.innerHTML=`<p>ID: ${id}</p><p>Created At: ${d.toUTCString()}</p>`;  
-  }catch{  
-    out.innerHTML="Invalid ID.";  
-  }  
+  }catch{ out.innerHTML="Invalid ID."; }  
 }  
   
 /* Random IP */  
@@ -352,10 +308,10 @@ async function getWeather(){
   try{  
     let r=await fetch(`https://wttr.in/${city}?format=j1`);  
     let j=await r.json();  
-    out.innerHTML=`<p><strong>Location:</strong> ${city}</p>  
-                   <p><strong>Temp:</strong> ${j.current_condition[0].temp_C}°C</p>  
-                   <p><strong>Feels Like:</strong> ${j.current_condition[0].FeelsLikeC}°C</p>  
-                   <p><strong>Weather:</strong> ${j.current_condition[0].weatherDesc[0].value}</p>`;  
+    out.innerHTML=`<p>Location: ${city}</p>  
+                   <p>Temp: ${j.current_condition[0].temp_C}°C</p>  
+                   <p>Feels Like: ${j.current_condition[0].FeelsLikeC}°C</p>  
+                   <p>Weather: ${j.current_condition[0].weatherDesc[0].value}</p>`;  
   }catch{ out.innerHTML="Error fetching weather."; }  
 }  
   
@@ -369,53 +325,38 @@ function genRoast(){
   
 /* Morse */  
 const MORSE={"A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"};  
-function encodeMorse(){  
+function encodeMorse(){   
   let t=document.getElementById("morseIn").value.toUpperCase();  
   document.getElementById("morseOut").innerText=t.split("").map(c=>MORSE[c]||c).join(" ");  
 }  
 function decodeMorse(){  
   let t=document.getElementById("morseIn").value.trim().split(" ");  
-  let inv = {};  
-for (let k in MORSE) { inv[MORSE[k]] = k; }  
-  
-function decodeMorse(){  
-  let t = document.getElementById("morseIn").value.trim().split(" ");  
-  let result = t.map(c => inv[c] || c).join("");  
-  document.getElementById("morseOut").innerText = result;  
+  let inv=Object.fromEntries(Object.entries(MORSE).map(([k,v])=>[v,k]));  
+  document.getElementById("morseOut").innerText=t.map(c=>inv[c]||"?").join("");  
 }  
   
-/* Username Lookup (fake example, replace with real API if needed) */  
-function lookupUsername(){  
-  let username = document.getElementById("usernameInput").value;  
-  let out = document.getElementById("usernameResult");  
-  out.innerHTML = `Fetching info for <strong>${username}</strong>...`;  
-  // Example placeholder data  
-  setTimeout(() => {  
-    out.innerHTML = `<p>Username: ${username}</p>  
-                     <p>Status: Active</p>  
-                     <p>Created: ${new Date().toDateString()}</p>`;  
-  }, 500);  
+/* MATRIX BACKGROUND */  
+const canvas=document.getElementById("matrix"),ctx=canvas.getContext("2d");  
+canvas.width=window.innerWidth;canvas.height=window.innerHeight;  
+let cols=Math.floor(canvas.width/20),drops=Array(cols).fill(1);  
+function matrix(){  
+  ctx.fillStyle="rgba(0,0,0,0.05)";  
+  ctx.fillRect(0,0,canvas.width,canvas.height);  
+  ctx.fillStyle="#0f0";  
+  ctx.font="20px monospace";  
+  drops.forEach((y,i)=>{  
+    let text=String.fromCharCode(0x30A0+Math.random()*96);  
+    ctx.fillText(text,i*20,y*20);  
+    if(y*20>canvas.height && Math.random()>0.9)drops[i]=0;  
+    drops[i]++;  
+  });  
 }  
-  
-/* Domain / WHOIS Lookup (example using public API) */  
-async function lookupDomain(){  
-  let domain = document.getElementById("domainInput").value;  
-  let out = document.getElementById("domainResult");  
-  out.innerHTML = "Fetching...";  
-  try {  
-    let r = await fetch(`https://api.domainsdb.info/v1/domains/search?domain=${domain}`);  
-    let j = await r.json();  
-    if (j.domains && j.domains.length > 0) {  
-      out.innerHTML = `<p>Domain: ${j.domains[0].domain}</p>  
-                       <p>Country: ${j.domains[0].country || 'N/A'}</p>  
-                       <p>Create Date: ${j.domains[0].create_date || 'N/A'}</p>  
-                       <p>Update Date: ${j.domains[0].update_date || 'N/A'}</p>`;  
-    } else {  
-      out.innerHTML = "No data found.";  
-    }  
-  } catch {  
-    out.innerHTML = "Error fetching domain info.";  
-  }  
-}  
+setInterval(matrix,50);  
+window.addEventListener("resize",()=>{  
+  canvas.width=window.innerWidth;  
+  canvas.height=window.innerHeight;  
+  cols=Math.floor(canvas.width/20);  
+  drops=Array(cols).fill(1);  
+});  
 </script>  </body>  
 </html>
