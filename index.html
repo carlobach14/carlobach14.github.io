@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carlo14 IP Lookup</title>
+<style>
+  body { background: #000; color: #0f0; font-family: monospace; text-align:center; }
+  input, button { padding: 10px; margin: 10px; background: #111; color: #0f0; border: 1px solid #0f0; }
+  button:hover { background: #222; cursor: pointer; }
+  #result { margin-top: 20px; }
+</style>
+</head>
+<body>
+<h1>Carlo14 IP Lookup</h1>
+<input type="text" id="ip" placeholder="Enter IP Address" />
+<button onclick="lookup()">Lookup</button>
+<div id="result"></div>
+
+<script>
+async function lookup() {
+  const ip = document.getElementById('ip').value;
+  const resultDiv = document.getElementById('result');
+  resultDiv.innerHTML = "Fetching info...";
+
+  try {
+    // Free IP API
+    const res = await fetch(`https://ipapi.co/${ip}/json/`);
+    const data = await res.json();
+    if(data.error) {
+      resultDiv.innerHTML = "Error: " + data.reason;
+    } else {
+      resultDiv.innerHTML = `
+        <p>IP: ${data.ip}</p>
+        <p>City: ${data.city}</p>
+        <p>Region: ${data.region}</p>
+        <p>Country: ${data.country_name}</p>
+        <p>Org: ${data.org}</p>
+      `;
+    }
+  } catch(e) {
+    resultDiv.innerHTML = "Failed to fetch info.";
+  }
+}
+</script>
+</body>
+</html>
