@@ -47,6 +47,7 @@ canvas#matrix {
   border-radius: 6px;
   cursor: pointer;
   text-align: left;
+  font-size: 16px;
 }
 .menu-btn:hover {
   background: #0ff;
@@ -65,17 +66,19 @@ canvas#matrix {
   padding: 10px;
   color: #0ff;
   border-radius: 8px;
+  z-index: 1000;
 }
 #settingsPanel {
   display: none;
   position: fixed;
   right: 20px;
   top: 70px;
-  background: rgba(0,0,0,0.9);
+  background: rgba(0,0,0,0.95);
   padding: 20px;
   border: 2px solid #0ff;
   border-radius: 10px;
   width: 220px;
+  z-index: 1000;
 }
 /* MAIN CONTAINER */
 #main {
@@ -84,12 +87,12 @@ canvas#matrix {
 }
 .tool {
   display: none;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.85);
   border: 2px solid #0ff;
   padding: 20px;
   border-radius: 10px;
   margin-bottom: 20px;
-  box-shadow: 0 0 12px #0ff;
+  box-shadow: 0 0 15px #0ff;
 }
 .active { display: block; }
 input, button, textarea {
@@ -108,6 +111,8 @@ button:hover {
   font-weight: bold;
 }
 #colorPicker { width: 100%; }
+ul { list-style: none; padding: 0; }
+ul li { margin: 8px 0; font-size: 18px; }
 @media screen and (max-width: 768px) {
   #sidebar {
     width: 100%;
@@ -132,7 +137,7 @@ button:hover {
 <div id="settingsPanel">
   <h3>Settings</h3>
   <p>Glow / Border Colour:</p>
-  <input type="color" id="colorPicker">
+  <input type="color" id="colorPicker" value="#0f0">
 </div>
 
 <div id="sidebar">
@@ -151,21 +156,23 @@ button:hover {
 </div>
 
 <div id="main">
+  <!-- HOME -->
   <div id="home" class="tool active">
     <h1>Welcome to Carlo Tools</h1>
     <p>The ultimate hacker-styled toolkit with real working utilities:</p>
     <ul>
-      <li>IP Lookup / Random IP</li>
-      <li>Discord ID Info</li>
-      <li>Hash & Base64 Encode/Decode</li>
-      <li>Device Info</li>
-      <li>Bible Verse Search</li>
-      <li>Weather Checker</li>
-      <li>Roast Generator / Rizz</li>
-      <li>Morse Encoder/Decoder</li>
+      <li>🔍 IP Lookup / 🎲 Random IP</li>
+      <li>💠 Discord ID Info</li>
+      <li>🔐 Hash & 🗂️ Base64 Encode/Decode</li>
+      <li>📱 Device Info</li>
+      <li>📖 Bible Verse Search</li>
+      <li>🌦️ Weather Checker</li>
+      <li>🔥 Roast Generator / Rizz</li>
+      <li>• — Morse Encoder/Decoder</li>
     </ul>
   </div>
 
+  <!-- IP Lookup -->
   <div id="ip" class="tool">
     <h1>IP Lookup</h1>
     <input id="ipInput" placeholder="Enter IP...">
@@ -173,6 +180,7 @@ button:hover {
     <div id="ipResult"></div>
   </div>
 
+  <!-- Discord ID -->
   <div id="discord" class="tool">
     <h1>Discord ID Lookup</h1>
     <input id="discordInput" placeholder="Enter Discord ID">
@@ -180,12 +188,14 @@ button:hover {
     <div id="discordResult"></div>
   </div>
 
+  <!-- Random IP -->
   <div id="randomip" class="tool">
     <h1>Random IP Generator</h1>
     <button onclick="genIP()">Generate</button>
     <div id="rip"></div>
   </div>
 
+  <!-- Hash -->
   <div id="hash" class="tool">
     <h1>Hash Generator</h1>
     <input id="hashIn" placeholder="Text to hash">
@@ -195,6 +205,7 @@ button:hover {
     <div id="hashOut"></div>
   </div>
 
+  <!-- Base64 -->
   <div id="base64" class="tool">
     <h1>Base64 Encode / Decode</h1>
     <textarea id="b64In" rows="4"></textarea>
@@ -203,11 +214,13 @@ button:hover {
     <div id="b64Out"></div>
   </div>
 
+  <!-- Device Info -->
   <div id="device" class="tool">
     <h1>Your Device Info</h1>
     <pre id="dev"></pre>
   </div>
 
+  <!-- Bible Verse -->
   <div id="verse" class="tool">
     <h1>Bible Verse Lookup</h1>
     <input id="verseInput">
@@ -215,6 +228,7 @@ button:hover {
     <div id="verseResult"></div>
   </div>
 
+  <!-- Weather -->
   <div id="weather" class="tool">
     <h1>Weather Checker</h1>
     <input id="weatherInput" placeholder="Enter city">
@@ -222,13 +236,15 @@ button:hover {
     <div id="weatherOut"></div>
   </div>
 
+  <!-- Roast -->
   <div id="roast" class="tool">
-    <h1>Roast Generator</h1>
+    <h1>Roast / Rizz Generator</h1>
     <input id="roastInput" placeholder="Describe the person">
-    <button onclick="genRoast()">Roast</button>
+    <button onclick="genRoast()">Generate</button>
     <div id="roastOut"></div>
   </div>
 
+  <!-- Morse -->
   <div id="morse" class="tool">
     <h1>Morse Encoder/Decoder</h1>
     <textarea id="morseIn" rows="3" placeholder="Enter text or morse"></textarea>
@@ -236,74 +252,67 @@ button:hover {
     <button onclick="decodeMorse()">Decode</button>
     <div id="morseOut"></div>
   </div>
-
 </div>
 
 <script>
-function openTool(id) {
-  document.querySelectorAll(".tool").forEach(a => a.classList.remove("active"));
+/* Tool navigation */
+function openTool(id){
+  document.querySelectorAll(".tool").forEach(a=>a.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
-/* SETTINGS */
-document.getElementById("settingsBtn").onclick = () => {
+/* Settings panel */
+document.getElementById("settingsBtn").onclick = ()=>{
   let s = document.getElementById("settingsPanel");
-  s.style.display = s.style.display === "block" ? "none" : "block";
+  s.style.display = s.style.display==="block"?"none":"block";
 };
-document.getElementById("colorPicker").onchange = (e) => {
-  document.body.style.color = e.target.value;
-  document.querySelectorAll("*").forEach(el => {
-    if(el.style.borderColor) el.style.borderColor = e.target.value;
-  });
+document.getElementById("colorPicker").onchange = e=>{
+  let col = e.target.value;
+  document.body.style.color = col;
+  document.querySelectorAll("*").forEach(el=>{if(el.style.borderColor)el.style.borderColor=col;});
 };
 
 /* IP Lookup */
-async function lookupIP() {
-  let ip = document.getElementById("ipInput").value;
-  let out = document.getElementById("ipResult");
-  out.innerHTML = "Fetching...";
-  try {
-    let r = await fetch(`https://ipapi.co/${ip}/json`);
-    let j = await r.json();
-    out.innerHTML = `
-      <p>IP: ${j.ip}</p>
-      <p>City: ${j.city}</p>
-      <p>Region: ${j.region}</p>
-      <p>Country: ${j.country_name}</p>
-      <p>Org: ${j.org}</p>
-    `;
-  } catch {
-    out.innerHTML = "Error fetching IP.";
-  }
+async function lookupIP(){
+  let ip=document.getElementById("ipInput").value;
+  let out=document.getElementById("ipResult");
+  out.innerHTML="Fetching...";
+  try{
+    let r=await fetch(`https://ipapi.co/${ip}/json`);
+    let j=await r.json();
+    out.innerHTML=`<p>IP: ${j.ip}</p>
+                   <p>City: ${j.city}</p>
+                   <p>Region: ${j.region}</p>
+                   <p>Country: ${j.country_name}</p>
+                   <p>Org: ${j.org}</p>`;
+  }catch{ out.innerHTML="Error fetching IP."; }
 }
 
-/* Discord Lookup */
-function lookupDiscord() {
-  const id = document.getElementById("discordInput").value;
-  const out = document.getElementById("discordResult");
-  out.innerHTML = "Processing...";
-  try {
-    const ts = ((BigInt(id) >> 22n) + 1420070400000n);
-    const d = new Date(Number(ts));
-    out.innerHTML = `<p>ID: ${id}</p><p>Created At: ${d.toUTCString()}</p>`;
-  } catch {
-    out.innerHTML = "Invalid ID.";
-  }
+/* Discord ID Lookup */
+function lookupDiscord(){
+  const id=document.getElementById("discordInput").value;
+  const out=document.getElementById("discordResult");
+  out.innerHTML="Processing...";
+  try{
+    const ts=((BigInt(id)>>22n)+1420070400000n);
+    const d=new Date(Number(ts));
+    out.innerHTML=`<p>ID: ${id}</p><p>Created At: ${d.toUTCString()}</p>`;
+  }catch{ out.innerHTML="Invalid ID."; }
 }
 
 /* Random IP */
-function genIP() {
-  const ip = Array(4).fill(0).map(()=>Math.floor(Math.random()*256)).join(".");
-  document.getElementById("rip").innerText = ip;
+function genIP(){
+  const ip=Array(4).fill(0).map(()=>Math.floor(Math.random()*256)).join(".");
+  document.getElementById("rip").innerText=ip;
 }
 
 /* Hash */
-async function doHash(type) {
-  const t = document.getElementById("hashIn").value;
-  const data = new TextEncoder().encode(t);
-  const hash = await crypto.subtle.digest(type, data);
-  const hex = Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("");
-  document.getElementById("hashOut").innerText = hex;
+async function doHash(type){
+  const t=document.getElementById("hashIn").value;
+  const data=new TextEncoder().encode(t);
+  const hash=await crypto.subtle.digest(type,data);
+  const hex=Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,"0")).join("");
+  document.getElementById("hashOut").innerText=hex;
 }
 
 /* Base64 */
@@ -311,64 +320,49 @@ function b64Encode(){document.getElementById("b64Out").innerText=btoa(document.g
 function b64Decode(){document.getElementById("b64Out").innerText=atob(document.getElementById("b64In").value);}
 
 /* Device Info */
-document.getElementById("dev").innerText = JSON.stringify({
-  userAgent: navigator.userAgent,
-  platform: navigator.platform,
-  language: navigator.language
-}, null, 2);
+document.getElementById("dev").innerText=JSON.stringify({
+  userAgent:navigator.userAgent,
+  platform:navigator.platform,
+  language:navigator.language
+},null,2);
 
 /* Bible Verse */
-async function lookupVerse() {
-  let v = document.getElementById("verseInput").value;
-  let out = document.getElementById("verseResult");
+async function lookupVerse(){
+  let v=document.getElementById("verseInput").value;
+  let out=document.getElementById("verseResult");
   out.innerHTML="Fetching...";
   try{
-    let r = await fetch(`https://bible-api.com/${encodeURIComponent(v)}`);
-    let j = await r.json();
-    out.innerHTML = j.text? `<h4>${j.reference}</h4><p>${j.text}</p>`:"Not found.";
-  }catch{
-    out.innerHTML="Error.";
-  }
+    let r=await fetch(`https://bible-api.com/${encodeURIComponent(v)}`);
+    let j=await r.json();
+    out.innerHTML=j.text? `<h4>${j.reference}</h4><p>${j.text}</p>`:"Not found.";
+  }catch{ out.innerHTML="Error."; }
 }
 
 /* Weather */
-async function getWeather() {
-  let city = document.getElementById("weatherInput").value;
-  let out = document.getElementById("weatherOut");
-  out.innerHTML = "Fetching...";
-  try {
-    let r = await fetch(`https://wttr.in/${city}?format=j1`);
-    let j = await r.json();
-    out.innerHTML = `<p>Location: ${city}</p>
-                     <p>Temp: ${j.current_condition[0].temp_C}°C</p>
-                     <p>Feels Like: ${j.current_condition[0].FeelsLikeC}°C</p>
-                     <p>Weather: ${j.current_condition[0].weatherDesc[0].value}</p>`;
-  } catch {
-    out.innerHTML="Error fetching weather.";
-  }
+async function getWeather(){
+  let city=document.getElementById("weatherInput").value;
+  let out=document.getElementById("weatherOut");
+  out.innerHTML="Fetching...";
+  try{
+    let r=await fetch(`https://wttr.in/${city}?format=j1`);
+    let j=await r.json();
+    out.innerHTML=`<p>Location: ${city}</p>
+                   <p>Temp: ${j.current_condition[0].temp_C}°C</p>
+                   <p>Feels Like: ${j.current_condition[0].FeelsLikeC}°C</p>
+                   <p>Weather: ${j.current_condition[0].weatherDesc[0].value}</p>`;
+  }catch{ out.innerHTML="Error fetching weather."; }
 }
 
-/* Roast Generator (better roasts) */
-const roasts = [
-  "If I wanted to kill myself I'd climb your ego and jump to your IQ.",
-  "You bring everyone so much joy… when you leave the room.",
-  "You're as useless as the 'ueue' in 'queue'.",
-  "You're proof that even evolution takes a break sometimes.",
-  "Brains aren't everything. In your case, they're nothing.",
-  "You're like a cloud. When you disappear, it's a beautiful day.",
-  "I'd agree with you but then we’d both be wrong.",
-  "You have something on your chin… no, the third one down.",
-  "You're like a software update. Whenever I see you, I think 'Do I have to restart?'",
-  "You bring everyone happiness… by leaving."
-];
+/* Roast / Rizz */
+const roasts=["If I wanted to kill myself I'd climb your ego and jump to your IQ.","You bring everyone so much joy… when you leave the room.","You're as useless as the 'ueue' in 'queue'.","You're proof that even evolution takes a break sometimes.","Brains aren't everything. In your case, they're nothing.","You're like a cloud. When you disappear, it's a beautiful day.","I'd agree with you but then we’d both be wrong.","You have something on your chin… no, the third one down.","You're like a software update. Whenever I see you, I think 'Do I have to restart?'","You bring everyone happiness… by leaving."];
 function genRoast(){
-  let desc = document.getElementById("roastInput").value || "This person";
-  let r = roasts[Math.floor(Math.random()*roasts.length)];
-  document.getElementById("roastOut").innerText = `${desc}? ${r}`;
+  let desc=document.getElementById("roastInput").value||"This person";
+  let r=roasts[Math.floor(Math.random()*roasts.length)];
+  document.getElementById("roastOut").innerText=`${desc}? ${r}`;
 }
 
 /* Morse */
-const MORSE = {"A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"};
+const MORSE={"A":".-","B":"-...","C":"-.-.","D":"-..","E":".","F":"..-.","G":"--.","H":"....","I":"..","J":".---","K":"-.-","L":".-..","M":"--","N":"-.","O":"---","P":".--.","Q":"--.-","R":".-.","S":"...","T":"-","U":"..-","V":"...-","W":".--","X":"-..-","Y":"-.--","Z":"--..","1":".----","2":"..---","3":"...--","4":"....-","5":".....","6":"-....","7":"--...","8":"---..","9":"----.","0":"-----"};
 function encodeMorse(){ 
   let t=document.getElementById("morseIn").value.toUpperCase();
   document.getElementById("morseOut").innerText=t.split("").map(c=>MORSE[c]||c).join(" ");
@@ -379,10 +373,10 @@ function decodeMorse(){
   document.getElementById("morseOut").innerText=t.map(c=>inv[c]||"?").join("");
 }
 
-/* MATRIX */
+/* MATRIX BACKGROUND */
 const canvas=document.getElementById("matrix"),ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth;canvas.height=window.innerHeight;
-let cols=Math.floor(canvas.width/20);let drops=Array(cols).fill(1);
+let cols=Math.floor(canvas.width/20),drops=Array(cols).fill(1);
 function matrix(){
   ctx.fillStyle="rgba(0,0,0,0.05)";
   ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -391,16 +385,18 @@ function matrix(){
   drops.forEach((y,i)=>{
     let text=String.fromCharCode(0x30A0+Math.random()*96);
     ctx.fillText(text,i*20,y*20);
-    if(y*20>canvas.height&&Math.random()>0.9)drops[i]=0;
+    if(y*20>canvas.height && Math.random()>0.9)drops[i]=0;
     drops[i]++;
   });
 }
 setInterval(matrix,50);
 window.addEventListener("resize",()=>{
-  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
   cols=Math.floor(canvas.width/20);
   drops=Array(cols).fill(1);
 });
 </script>
+
 </body>
-      </html>
+</html>
