@@ -143,7 +143,7 @@
   <button class="menu-btn" onclick="openTool('hash')">🔐 Hash Generator</button>
   <button class="menu-btn" onclick="openTool('base64')">🗂️ Base64 Encode/Decode</button>
   <button class="menu-btn" onclick="openTool('device')">📱 Device Info</button>
-  <button class="menu-btn" onclick="openTool('urlscan')">🌐 URL Scanner</button>
+  <button class="menu-btn" onclick="openTool('verse')">📖 Bible Verse</button>
   <button class="menu-btn" onclick="openTool('color')">🎨 Custom Colour</button>
 </div>
 
@@ -197,12 +197,12 @@
     <pre id="dev"></pre>
   </div>
 
-  <!-- URL Scanner -->
-  <div id="urlscan" class="tool">
-    <h1>URL Scanner</h1>
-    <input id="urlInput" placeholder="Enter URL to scan">
-    <button onclick="scanURL()">Scan URL</button>
-    <div id="urlResult"></div>
+  <!-- Bible Verse Lookup -->
+  <div id="verse" class="tool">
+    <h1>Bible Verse Lookup</h1>
+    <input id="verseInput" placeholder="Enter verse (e.g., John 3:16)">
+    <button onclick="lookupVerse()">Lookup Verse</button>
+    <div id="verseResult"></div>
   </div>
 
   <!-- Custom Colour -->
@@ -294,45 +294,33 @@ function setColor() {
   document.querySelectorAll("*").forEach(el => { if (el.style.border) el.style.borderColor = c; });
 }
 
-/* 🌐 NEW SAFE URL SCANNER */
-async function scanURL() {
-  const url = document.getElementById("urlInput").value;
-  const out = document.getElementById("urlResult");
-  out.innerHTML = "Scanning...";
+/* 📖 Bible Verse Lookup */
+async function lookupVerse() {
+  const verse = document.getElementById("verseInput").value.trim();
+  const out = document.getElementById("verseResult");
 
-  const enc = encodeURIComponent(url);
+  if (!verse) {
+    out.innerHTML = "Please enter a verse.";
+    return;
+  }
+
+  out.innerHTML = "Fetching verse...";
 
   try {
-    // 1. IPQualityScore keyless demo
-    const ipqs = await fetch(
-      `https://ipqualityscore.com/api/json/url/UDyTqEo1cW1l7zQ0RdBpvg/${enc}`
-    ).then(r => r.json());
+    // Using bible-api.com (no API key)
+    const res = await fetch(`https://bible-api.com/${encodeURIComponent(verse)}`);
+    const data = await res.json();
 
-    // 2. Header resolver (CORS bypass)
-    const head = await fetch("https://api.allorigins.win/get?url=" + enc)
-      .then(r => r.json());
-
-    // 3. Screenshot preview (keyless)
-    const screenshot = `https://api.screenshotmachine.com/?key=free&url=${enc}&dimension=1024x768`;
-
-    out.innerHTML = `
-      <h3>🔍 Scan Results</h3>
-      <p><b>URL:</b> ${url}</p>
-
-      <h4>🛡️ IPQualityScore</h4>
-      <p>Risk Score: ${ipqs.risk_score}</p>
-      <p>Malicious: ${ipqs.malicious}</p>
-      <p>Phishing: ${ipqs.phishing}</p>
-      <p>Suspicious: ${ipqs.suspicious}</p>
-
-      <h4>📡 URL Headers / Redirects</h4>
-      <pre>${head.contents ? "Fetched Successfully" : "No Preview"}</pre>
-
-      <h4>🖼️ Screenshot Preview</h4>
-      <iframe src="${screenshot}" width="100%" height="400px"></iframe>
-    `;
+    if (data.text) {
+      out.innerHTML = `
+        <h4>${data.reference}</h4>
+        <p>${data.text}</p>
+      `;
+    } else {
+      out.innerHTML = "Verse not found.";
+    }
   } catch (err) {
-    out.innerHTML = "Error: " + err;
+    out.innerHTML = "Error fetching verse: " + err;
   }
 }
 
