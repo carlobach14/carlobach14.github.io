@@ -152,7 +152,6 @@ ul li { margin: 8px 0; font-size: 18px; }
   <button class="menu-btn" onclick="openTool('weather')">🌦️ Weather</button>
   <button class="menu-btn" onclick="openTool('roast')">🔥 Roast Gen</button>
   <button class="menu-btn" onclick="openTool('morse')">• — Morse</button>
-  <button class="menu-btn" onclick="openTool('snapchat')">👻 Snapchat Lookup</button>
 </div>
 
 <div id="main">
@@ -169,7 +168,6 @@ ul li { margin: 8px 0; font-size: 18px; }
       <li>🌦️ Weather Checker</li>
       <li>🔥 Roast Generator / Rizz</li>
       <li>• — Morse Encoder/Decoder</li>
-      <li>👻 Snapchat Username Lookup</li>
     </ul>
   </div>
 
@@ -254,14 +252,6 @@ ul li { margin: 8px 0; font-size: 18px; }
     <div id="morseOut"></div>
   </div>
 
-  <!-- Snapchat Lookup -->
-  <div id="snapchat" class="tool">
-    <h1>Snapchat Username Lookup</h1>
-    <input id="snapInput" placeholder="Enter Snapchat username">
-    <button onclick="lookupSnap()">Lookup</button>
-    <div id="snapResult"></div>
-  </div>
-
 </div>
 
 <script>
@@ -282,20 +272,29 @@ document.getElementById("colorPicker").onchange = e=>{
   document.querySelectorAll("*").forEach(el=>{if(el.style.borderColor)el.style.borderColor=col;});
 };
 
-/* IP Lookup */
+/* IP Lookup - enhanced */
 async function lookupIP(){
   let ip=document.getElementById("ipInput").value;
   let out=document.getElementById("ipResult");
   out.innerHTML="Fetching...";
   try{
-    let r=await fetch(`https://ipapi.co/${ip}/json`);
+    let r=await fetch(`https://ipapi.co/${ip}/json/`);
     let j=await r.json();
-    out.innerHTML=`<p>IP: ${j.ip}</p>
-                   <p>City: ${j.city}</p>
-                   <p>Region: ${j.region}</p>
-                   <p>Country: ${j.country_name}</p>
-                   <p>Org: ${j.org}</p>`;
-  }catch{ out.innerHTML="Error fetching IP."; }
+    out.innerHTML=`
+      <p><b>IP:</b> ${j.ip}</p>
+      <p><b>City:</b> ${j.city}</p>
+      <p><b>Region:</b> ${j.region}</p>
+      <p><b>Country:</b> ${j.country_name}</p>
+      <p><b>Postal Code:</b> ${j.postal}</p>
+      <p><b>Latitude:</b> ${j.latitude}</p>
+      <p><b>Longitude:</b> ${j.longitude}</p>
+      <p><b>Timezone:</b> ${j.timezone}</p>
+      <p><b>ASN:</b> ${j.asn}</p>
+      <p><b>Org:</b> ${j.org}</p>
+    `;
+  }catch{
+    out.innerHTML="Error fetching IP info.";
+  }
 }
 
 /* Discord ID Lookup */
@@ -383,29 +382,6 @@ function decodeMorse(){
   document.getElementById("morseOut").innerText=t.map(c=>inv[c]||"?").join("");
 }
 
-/* Snapchat Lookup */
-async function lookupSnap() {
-  const username = document.getElementById("snapInput").value.trim();
-  const out = document.getElementById("snapResult");
-  if(!username) return out.innerHTML = "Enter a username.";
-  out.innerHTML = "Fetching...";
-  try {
-    // ScrapeCreators API endpoint with your API key
-    let res = await fetch(`https://scrapecreators.com/api/snapchat/user?api_key=WKrO1YL4csXQAWb4C5pqzNuMcA52&username=${encodeURIComponent(username)}`);
-    let data = await res.json();
-    if(data.error) {
-      out.innerHTML = "Username not found.";
-    } else {
-      out.innerHTML = `<p>Username: ${data.username}</p>
-                       <p>Display Name: ${data.display_name || "N/A"}</p>
-                       <p>Private: ${data.private ? "Yes" : "No"}</p>
-                       <p>Bitmoji: ${data.bitmoji ? "Yes" : "No"}</p>`;
-    }
-  } catch {
-    out.innerHTML = "Error fetching Snapchat info.";
-  }
-}
-
 /* MATRIX BACKGROUND */
 const canvas=document.getElementById("matrix"),ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth;canvas.height=window.innerHeight;
@@ -433,4 +409,4 @@ window.addEventListener("resize", ()=>{
 });
 </script>
 </body>
-  </html>
+</html>
